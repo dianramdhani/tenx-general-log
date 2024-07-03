@@ -1,0 +1,25 @@
+{
+  "name": "tenx-general-log",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start:dev": "ts-node src/index.ts",
+    "build": "rimraf ./dist && tsc",
+    "start": "npm run build && node dist/index.js"
+  },
+  "author": "Dian Ramdhani Lubis",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "nodemon": "^3.1.4",
+    "rimraf": "^5.0.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "mysql2": "^3.10.2",
+    "winston": "^3.13.0"
+  }
+}
