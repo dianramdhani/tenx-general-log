@@ -12,6 +12,8 @@ TenX General Log adalah proyek yang bertujuan untuk menyediakan solusi logging y
 - TypeScript
 - MySQL
 - Docker Compose
+- Winston
+- Date-fns
 
 ## Installation
 1. Clone repository ini:

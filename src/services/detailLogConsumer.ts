@@ -1,12 +1,14 @@
+import { differenceInSeconds } from 'date-fns'
 import { closeConnection, getConnection } from '../utils/database'
-import { type RowDataPacket } from 'mysql2/promise'
 import { logManager } from '../utils/logManager'
+import type { RowDataPacket } from 'mysql2/promise'
+import type { General } from '../types/generalLog'
 
 type Detail = RowDataPacket & {
-  processid: string
+  processid: number
   start: string
   finish: string
-  classification: string
+  classification: 'counterfeit' | 'genuine'
 }
 
 export default async function detailLogConsumer() {
@@ -31,7 +33,28 @@ export default async function detailLogConsumer() {
         ON t1.processid = t2.processid;
         `
     )
-    logManager.info(`Data yang dihasilkan: ${JSON.stringify(results)}`)
+    const generalLogs: General[] = results.map((detail) => ({
+      rawData: JSON.stringify(detail),
+      processid: detail.processid,
+      description: `Classification of process id ${detail.processid} is ${detail.classification}`,
+      duration: differenceInSeconds(detail.finish, detail.start),
+      start: detail.start,
+      finish: detail.finish,
+    }))
+    const query = `
+      INSERT INTO general_log (processid, rawData, description, duration, start, finish)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `
+    for (const item of generalLogs) {
+      await connection.execute(query, [
+        item.processid,
+        item.rawData,
+        item.description,
+        item.duration,
+        item.start,
+        item.finish,
+      ])
+    }
   } catch (error) {
     if (error instanceof Error)
       logManager.error(`Gagal membaca data: ${error.message}`)
